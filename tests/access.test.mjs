@@ -18,3 +18,9 @@ test('oversized and empty login requests are rejected before backend verificatio
   const r=await fetch(origin+'/api/login',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body});assert.equal(r.status,status);
  }
 });
+
+test('anonymous visitor cannot access key management',async()=>{
+ const r1=await fetch(origin+'/api/admin/keys');assert.equal(r1.status,403);
+ const r2=await fetch(origin+'/api/admin/keys',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:'{}'});assert.equal(r2.status,403);
+ const r3=await fetch(origin+'/api/admin/keys',{method:'DELETE',headers:{Origin:origin,'Content-Type':'application/json'},body:'{}'});assert.equal(r3.status,403);
+});
