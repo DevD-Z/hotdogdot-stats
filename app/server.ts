@@ -1,13 +1,12 @@
-import {env} from 'cloudflare:workers';
-import {getChatGPTUser} from './chatgpt-auth';
-const config=env as unknown as Record<string,string>;
+const config=process.env;
+import {cookies} from 'next/headers';
+import {ADMIN_COOKIE,verifyAdminSession} from '../lib/admin-session';
 export function json(data:unknown,status=200,extra:Record<string,string>={}){
  return Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...extra}});
 }
 export function sameOrigin(request:Request){return request.headers.get('Origin')===new URL(request.url).origin;}
 export async function isAdmin(){
- const user=await getChatGPTUser();
- return !!user&&!!config.ADMIN_EMAIL&&user.email.toLowerCase()===config.ADMIN_EMAIL.toLowerCase();
+ return verifyAdminSession((await cookies()).get(ADMIN_COOKIE)?.value||'');
 }
 export async function bridge(operation:'login'|'stats'|'admin',request:Request,body:Record<string,unknown>){
  if(!config.WEB_BRIDGE_SECRET||!config.LICENSE_BACKEND_URL)throw new Error('Not configured');

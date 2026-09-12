@@ -1,92 +1,132 @@
 # Hotdogdot Stats
 
-## วิธีใช้งานเว็บ
+เว็บสถิติ CookieRun สำหรับผู้ใช้และแอดมิน บน Next.js / Vercel
 
-เว็บใช้งานจริง: https://cookierun-stats.kidmiakk.chatgpt.site
+- เว็บ: https://hotdogdot-stats.vercel.app
+- หน้าแอดมิน: https://hotdogdot-stats.vercel.app/admin
+- GitHub: https://github.com/DevD-Z/hotdogdot-stats
 
-หน้าแอดมิน: https://cookierun-stats.kidmiakk.chatgpt.site/admin
+Repository นี้มีเฉพาะเว็บ ไม่มีแอป Android, APK, ฐานข้อมูลจริง หรือกุญแจของระบบไลเซนส์
 
-GitHub: https://github.com/DevD-Z/hotdogdot-stats
-
-### ผู้ใช้ทั่วไป: ดูสถิติของ KEY ตัวเอง
+## ผู้ใช้ทั่วไป
 
 1. ใช้แอป Android รุ่น 0.21 ขึ้นไปที่รองรับการส่งสถิติ และเข้าสู่แอปด้วย KEY ของคุณ
-2. เปิดการแคสต์หน้าจอและเริ่มให้แอปทำงานในเกม
-3. เปิดเว็บ แล้วกรอก KEY เดียวกับที่ใช้ในแอป กด **ดูสถิติของฉัน**
-4. เว็บแสดงรอบที่จบ เวลาและกล่องของรอบปัจจุบัน/ล่าสุด กล่องแยกชนิด และประวัติเซสชันของ KEY นั้น
-5. กด **อัปเดต** เมื่อต้องการโหลดข้อมูลใหม่ หรือรอเว็บอัปเดตอัตโนมัติทุก 60 วินาที
-6. กด **ออกจากระบบ** เมื่อใช้เสร็จ โดยเฉพาะบนเครื่องที่ใช้ร่วมกัน
+2. เปิดแคสต์หน้าจอ แล้วเริ่มให้แอปทำงานในเกม
+3. เปิดเว็บ กรอก KEY เดียวกับแอป แล้วกด **ดูสถิติของฉัน**
+4. ดูรอบที่จบ เวลารอบปัจจุบัน/ล่าสุด กล่องแยกชนิด และประวัติเซสชัน
+5. กด **อัปเดต** หรือรอเว็บโหลดข้อมูลใหม่ทุก 60 วินาที
+6. กด **ออกจากระบบ** เมื่อใช้เสร็จ
 
-การเข้าสู่เว็บมีอายุ 5 นาที เมื่อหมดเวลาจะต้องกรอก KEY ใหม่ หน้าเว็บเปิดให้เข้าถึงได้ทั่วไป แต่ข้อมูลสถิติต้องผ่านการตรวจสิทธิ์ก่อนเสมอ
+ผู้ใช้เห็นเฉพาะข้อมูลของ KEY ตัวเอง การเข้าสู่เว็บมีอายุ 5 นาที เมื่อหมดเวลาต้องกรอก KEY ใหม่ เว็บไม่เก็บ KEY ใน URL หรือ browser storage
 
-### แอดมิน: ดูข้อมูลทุก KEY
+## แอดมิน
 
-1. เปิดหน้า `/admin` หรือกด **แอดมิน** บนเว็บ
-2. เข้าสู่ระบบด้วยบัญชี ChatGPT เจ้าของเว็บที่ผู้ดูแลกำหนดไว้
-3. หน้าแอดมินแสดงเซสชันจากทุก KEY ที่ส่งข้อมูลเข้ามาแล้ว พร้อมรหัสทะเบียน KEY รอบที่จบ กล่อง และเวลาอัปเดต
-4. ใช้ **ก่อนหน้า / ถัดไป** เพื่อดูข้อมูลเพิ่มเติม หนึ่งหน้าแสดงไม่เกิน 50 เซสชัน
+1. เปิดหน้า **/admin**
+2. กรอกรหัสลับแอดมินที่ผู้ดูแลกำหนดใน `ADMIN_ACCESS_KEY`
+3. กด **เข้าสู่ระบบ** เพื่อดูเซสชันของทุก KEY ที่ส่งข้อมูลเข้ามาแล้ว
+4. ใช้ **ก่อนหน้า / ถัดไป** เพื่อดูข้อมูลเพิ่มเติม หนึ่งหน้ามีไม่เกิน 50 เซสชัน
+5. กด **ออกจากระบบ** เมื่อใช้เสร็จ เซสชันแอดมินมีอายุ 1 ชั่วโมง
 
-KEY สำหรับเล่นเกมไม่ใช่รหัสผ่านแอดมิน ถ้าขึ้น **ไม่มีสิทธิ์แอดมิน** ให้กดเปลี่ยนบัญชีแล้วใช้บัญชีที่ได้รับอนุญาต การลงชื่อเข้าใช้ ChatGPT ด้วยบัญชีทั่วไปไม่ได้ให้สิทธิ์ดูทุก KEY
+รหัสแอดมินแยกจาก KEY เล่นเกม และไม่ต้องลงชื่อเข้าใช้ ChatGPT บน Vercel
+แอดมินเห็นรหัสทะเบียน KEY แทน KEY จริง จึงไม่ควรนำรหัสทะเบียนไปกรอกในหน้า Login
 
-### อ่านตัวเลขอย่างไร
+สำหรับการติดตั้งครั้งนี้ รหัสแอดมินเก็บไว้ในไฟล์ส่วนตัวบนเครื่องผู้ดูแลที่
+`~/.config/hotdogdot-stats/credentials.txt` อ่านค่าบรรทัด `ADMIN_ACCESS_KEY`
+ไฟล์นี้อยู่นอก repository และห้ามนำขึ้น GitHub
 
-- **รอบที่จบในเซสชันล่าสุด**: จำนวนรอบที่แอปตรวจพบว่าจบแล้วในเซสชันนั้น
-- **รอบปัจจุบัน / ล่าสุด**: เวลารอบจากข้อมูลที่แอปส่งครั้งล่าสุด ไม่ใช่นาฬิกาสดบนเว็บ
-- **กล่องรอบนี้**: กล่องจากหน้ารางวัลของรอบล่าสุดที่แอปตรวจพบ
-- **Mystery Box**: แยกไม้ เงิน ทอง รุ้ง และไม่ทราบชนิด ภาพที่ไม่มีผลตรวจที่น่าเชื่อถือจะไม่ถูกเพิ่มเป็นกล่องสมมุติ
-- **กล่องรวมในหน้านี้**: รวมเฉพาะเซสชันที่อยู่ในหน้าปัจจุบัน เมื่อเปลี่ยนหน้าตัวเลขรวมอาจเปลี่ยนตาม
+## ความหมายของสถิติ
+
+- **รอบที่จบในเซสชันล่าสุด**: รอบที่แอปตรวจพบว่าจบแล้ว
+- **รอบปัจจุบัน / ล่าสุด**: เวลารอบจากข้อมูลที่ส่งครั้งล่าสุด ไม่ใช่นาฬิกาสดบนเว็บ
+- **กล่องรอบนี้**: กล่องจากหน้ารางวัลของรอบล่าสุดที่ตรวจพบ
+- **Mystery Box**: ไม้ เงิน ทอง รุ้ง และไม่ทราบชนิด ผลตรวจว่างไม่ถูกเพิ่มเป็นกล่องสมมุติ
+- **กล่องรวมในหน้านี้**: รวมเฉพาะเซสชันในหน้าที่เปิดอยู่ ไม่ใช่ยอดรวมทุกหน้า
 - **เซสชัน**: การทำงานของบริการแคสต์หน้าจอหนึ่งครั้ง เปิดบริการใหม่จะเริ่มเซสชันใหม่
-- แอดมินเห็น **รหัสทะเบียน KEY** แทน KEY จริง จึงไม่ควรนำรหัสทะเบียนไปกรอกในช่อง Login
 
-### ถ้ายังไม่เห็นสถิติ
+แอปส่งข้อมูลประมาณทุก 60 วินาที และเว็บโหลดใหม่ทุก 60 วินาที จึงอาจรอประมาณ 1–2 นาที
+ถ้าปิดแอปก่อนส่งครั้งถัดไป ข้อมูลที่ยังไม่ส่งอาจสูญหาย ไม่มีการกู้สถิติที่ไม่เคยส่ง และไม่มีข้อมูลย้อนหลังจากแอปรุ่นเก่า
+ข้อมูลเป็นผลที่แอปตรวจพบจากภาพ ไม่ใช่ข้อมูลรับรองจากเซิร์ฟเวอร์เกม
 
-1. ตรวจว่าใช้แอปรุ่นที่รองรับสถิติ และเว็บกับแอปใช้ KEY เดียวกัน
-2. ตรวจว่าแอปยังมีสิทธิ์ใช้งาน อินเทอร์เน็ต และบริการแคสต์หน้าจอยังทำงาน
-3. เริ่มเล่นแล้วรอประมาณ 1–2 นาที: แอปส่งข้อมูลประมาณทุก 60 วินาที และเว็บโหลดใหม่ทุก 60 วินาที
-4. กด **อัปเดต** และดูเวลา **อัปเดตล่าสุด**; ข้อมูลเก่าไม่ได้หมายความว่าแอปยังทำงานอยู่
-5. กล่องจะนับหลังแอปตรวจพบรอบที่จบและหน้ากล่องของรอบนั้น ไม่ใช่ทุกครั้งที่เห็นรูปกล่อง
+## ถ้าสถิติไม่ขึ้น
 
-ถ้าปิดแอปก่อนส่งข้อมูลรอบถัดไป ข้อมูลที่ยังไม่ส่งอาจสูญหาย เว็บไม่สามารถกู้ข้อมูลที่แอปยังไม่เคยส่งได้ และไม่มีสถิติย้อนหลังจากแอปรุ่นก่อนเริ่มรองรับการส่งข้อมูล
+1. ตรวจว่าเว็บและแอปใช้ KEY เดียวกัน และแอปรองรับการส่งสถิติ
+2. ตรวจอินเทอร์เน็ต สิทธิ์ไลเซนส์ และบริการแคสต์หน้าจอของแอป
+3. เริ่มเล่นแล้วรอ 1–2 นาที จากนั้นกด **อัปเดต**
+4. ดูเวลา **อัปเดตล่าสุด**; ข้อมูลเก่าไม่ได้ยืนยันว่าแอปยังทำงาน
+5. กล่องนับหลังตรวจพบรอบที่จบและหน้ากล่องของรอบนั้น ไม่ใช่ทุกครั้งที่เห็นรูปกล่อง
 
----
+สำหรับผู้ดูแล: หากเข้าสู่แอดมินได้แต่โหลดสถิติไม่ได้ ให้ตรวจ `WEB_BRIDGE_SECRET` ว่าตรงกับ Worker เดิม และตรวจ `LICENSE_BACKEND_URL`
+หาก API ตอบ 503 ให้ตรวจตัวแปรที่ยังไม่ได้ตั้งค่าและสถานะ backend; หากตอบ 401 ทั้งที่เพิ่งเข้าแอดมิน ให้ตรวจ secret เชื่อมต่อระหว่างเว็บกับ backend
+ถ้า KEY หมดอายุหรือไม่ถูกต้องต้องแก้ที่ระบบไลเซนส์ ไม่ใช่ตั้งรหัสแอดมินใหม่
 
-Thai CookieRun statistics dashboard. This repository contains **only the website**, not the Android bot, APKs, license signing keys, production database, or license backend source.
+## ตั้งค่าบน Vercel
 
-## Access
+Import repository นี้เป็น Next.js project หรือใช้ Vercel CLI จากโฟลเดอร์เว็บ
+ตั้ง Environment Variables สำหรับ **Production** ดังนี้:
 
-- `/`: enter your game license KEY. The existing license backend verifies it with LicenseGate. The browser receives a five-minute Secure/HttpOnly/SameSite=Strict cookie, never a raw KEY in storage or a URL.
-- `/admin`: ChatGPT sign-in, followed by a server-side administrator allowlist check. A game KEY cannot grant administrator access. An empty admin setting denies everyone.
-- Users see only their license's sessions. Administrators see all licenses with submitted sessions, identified by registration ID, not the plaintext KEY.
-- Statistics refresh every 60 seconds. Empty data is shown honestly; there is no demo data or fabricated box count.
+| ชื่อ | ค่า |
+| --- | --- |
+| `LICENSE_BACKEND_URL` | URL ของ license Worker เดิม ต้องเป็น HTTPS |
+| `WEB_BRIDGE_SECRET` | รหัสเชื่อมต่อที่ตรงกับ `WEB_BRIDGE_SECRET` บน license Worker |
+| `ADMIN_ACCESS_KEY` | รหัสสุ่มแอดมินอย่างน้อย 40 ตัวอักษร แนะนำสุ่ม 48 bytes แบบ base64url |
 
-## Local development
+ห้ามใส่ค่าเหล่านี้ใน `NEXT_PUBLIC_*`, `next.config.ts`, `vercel.json` หรือ GitHub
+หากต้องใช้ Preview Deployment ให้ตั้งตัวแปรใน Preview ด้วย
+เมื่อเปลี่ยน Environment Variables ต้อง redeploy
+เปลี่ยน `ADMIN_ACCESS_KEY` จะทำให้เซสชันแอดมินเดิมใช้ไม่ได้
 
-Requires Node 24 and npm. Copy `.env.example` to local `.env` and provide your existing backend URL, dedicated server-to-server bridge secret, and admin account email. Never commit real values. Configure matching production values through Sites runtime settings. The bridge secret must match the license backend's `WEB_BRIDGE_SECRET`.
+```bash
+npx vercel login
+npx vercel link --project hotdogdot-stats
+npx vercel env add LICENSE_BACKEND_URL production
+npx vercel env add WEB_BRIDGE_SECRET production
+npx vercel env add ADMIN_ACCESS_KEY production
+npx vercel deploy --prod
+```
 
-```powershell
+คำสั่ง env add ให้กรอกค่าที่ prompt ไม่ต้องใส่ secret ลงในคำสั่งที่บันทึกไว้ใน README
+
+## พัฒนาบนเครื่อง
+
+ใช้ Node.js 24 และ npm รันจากโฟลเดอร์เว็บ:
+
+```bash
 npm ci
-npm run dev -- --host 127.0.0.1
+npm run dev
+```
+
+คัดลอก `.env.example` เป็น `.env.local` แล้วใส่ค่าทดสอบ ไฟล์จริงนี้ถูก ignore จาก Git
+เปิด http://localhost:3000
+การเข้าใช้งานใช้คุกกี้ Secure; การทดสอบเบราว์เซอร์ควรใช้ localhost หรือ HTTPS
+
+ตรวจโค้ดและ build:
+
+```bash
 npm test
 npm run typecheck
+npm run lint
 npm run build
 ```
 
-The API smoke tests expect the local development server on `http://localhost:3000`; override `TEST_ORIGIN` for a dedicated test server. Do not supply real license keys to tests.
+API smoke tests ต้องมี dev server เปิดที่ http://localhost:3000 หรือกำหนด `TEST_ORIGIN` เป็น test server ที่เตรียมไว้
+ห้ามใส่ KEY จริงลงใน test fixtures
 
-Sites owns production sign-in and injects authenticated user headers. A standalone deployment must NOT trust headers supplied directly by a browser; replace that authentication integration before hosting outside Sites. The local development identity is test-only and is not an administrator by default.
+## Backend ที่ใช้อยู่
 
-## Existing license backend contract
+ฐานข้อมูลสถิติและ license API ยังคงอยู่ที่ Cloudflare Worker เดิม การย้ายเว็บมาที่ Vercel ไม่ได้ย้ายฐานข้อมูล
+Worker ต้องมี migration `0002_play_stats.sql` และรองรับ API ต่อไปนี้:
 
-The website server calls the fixed HTTPS backend paths below, using `Authorization: Bearer <WEB_BRIDGE_SECRET>`. That credential is never exposed in browser bundles.
+- `POST /v1/web/login`: ตรวจ KEY กับ LicenseGate และออก viewer token
+- `POST /v1/web/stats`: อ่านเฉพาะ license ที่ผูกอยู่ใน viewer token
+- `POST /v1/web/admin`: อ่านทุกเซสชัน หลังเว็บตรวจสิทธิ์แอดมินแล้ว
 
-- `POST /v1/web/login`: `{ key, client }` → `{ token, expiresIn }`
-- `POST /v1/web/stats`: `{ token, offset, client }` → viewer-scoped sessions
-- `POST /v1/web/admin`: `{ offset, client }` → all sessions, only after website administrator authorization
+ทั้งสาม endpoint รับ `Authorization: Bearer <WEB_BRIDGE_SECRET>` จาก server ของเว็บเท่านั้น
+viewer token มีอายุ 5 นาที ผูก license และ binding epoch; การส่ง snapshot ซ้ำเป็นการแทนค่า ไม่เพิ่มจำนวนกล่องซ้ำ
 
-Responses contain `sessions`, `latest`, and `hasMore`. Pages contain at most 50 sessions. Each session has `session`, `startedAt` (milliseconds), `updatedAt` (seconds), and 14 integer `values`: observed rounds, completed rounds, active flag, last/current round elapsed milliseconds, five session box totals (wood/silver/gold/rainbow/unknown), and five current-round box totals. Admin responses also contain the hashed `license` registration identifier. The required `play_stats` schema and API implementation remain in the separate private license-backend project.
+Response ประกอบด้วย `sessions`, `latest`, `hasMore`
+แต่ละเซสชันมี `session`, `startedAt` (milliseconds), `updatedAt` (seconds), และ `values` 14 จำนวน:
+รอบที่ตรวจพบ, รอบที่จบ, active flag, เวลารอบเป็น milliseconds, กล่องรวมเซสชัน 5 ชนิด, กล่องรอบปัจจุบัน 5 ชนิด
+หน้าแอดมินมี `license` เป็นรหัสทะเบียนที่ผ่านการแฮชแล้ว
 
-Current Android telemetry is sent on license renewal. Closing the app before its next upload can lose unsent data; this site cannot recover data the app never submitted. A new capture service creates a new session. Runtime information is client-observed, not anti-cheat proof.
-
-## Publishing
-
-Build the website and deploy the validated artifact with Sites. Keep `.openai/hosting.json` tied to the existing site; do not register another site for an update. Production variables belong in Sites, not that manifest or GitHub. Deploying to public access opens the login page, not protected statistics.
+เว็บไซต์ Vercel ใช้การตรวจคุกกี้ที่เซิร์ฟเวอร์ และไม่เชื่อถือ header ระบุตัวตนที่ผู้เรียกส่งมาเอง
+ไฟล์ `.openai/hosting.json` ที่ยังอยู่เป็นข้อมูลอ้างอิงของการ deploy Sites เดิม ไม่ถูกใช้ในการ deploy Vercel
