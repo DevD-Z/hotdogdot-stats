@@ -1,12 +1,12 @@
 'use client';
-import {useEffect,useState,useCallback} from 'react';
+import {useEffect,useState,useCallback,useRef} from 'react';
+import {newerLatest,type Session} from '../lib/latest-round';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Table,TableHeader,TableBody,TableHead,TableRow,TableCell} from '@/components/ui/table';
 import {KeyRound,Package,RefreshCw,ShieldCheck,Timer,Activity,LogOut,Plus,Trash2,Copy,Check,Key} from 'lucide-react';
 
-type Session={session:string;startedAt:number;values:number[];updatedAt:number;license?:string};
 type Data={sessions:Session[];latest?:Session|null;hasMore?:boolean};
 type LicenseKeyItem={id:number;active:boolean;licenseKey:string;name:string;notes:string;expirationDate:string|null;createdAt:string};
 
@@ -17,6 +17,12 @@ const date=(n:number)=>new Date(n).toLocaleString('th-TH',{dateStyle:'short',tim
 
 export default function Dashboard({admin=false}:{admin?:boolean}){
  const [key,setKey]=useState(''),[data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[offset,setOffset]=useState(0),[observedAt,setObservedAt]=useState(0);
+ const activeRequest=useRef<AbortController|null>(null);
+ const pendingRefresh=useRef(false);
+ const generation=useRef(0);
+ const cancelRefresh=useCallback(()=>{
+  generation.current++;pendingRefresh.current=false;activeRequest.current?.abort();activeRequest.current=null;
+ },[]);
  
  // Admin Key Management state
  const [keysList,setKeysList]=useState<LicenseKeyItem[]>([]);
@@ -30,15 +36,28 @@ export default function Dashboard({admin=false}:{admin?:boolean}){
  const [copiedKey,setCopiedKey]=useState<string|null>(null);
  const [keyActionError,setKeyActionError]=useState('');
 
- const refresh=useCallback(async()=>{
-  setBusy(true);
+ const refresh=useCallback(async function refreshRequest(latestOnly=false){
+  if(activeRequest.current){if(!latestOnly)pendingRefresh.current=true;return;}
+  const controller=new AbortController(),epoch=generation.current;
+  activeRequest.current=controller;
+  if(!latestOnly)setBusy(true);
   try{
-   const r=await fetch(`/api/${admin?'admin':'stats'}?offset=${offset}`,{cache:'no-store'});
+   const r=await fetch(`/api/${admin?'admin':'stats'}?${latestOnly?'latest=1':`offset=${offset}`}`,{cache:'no-store',signal:AbortSignal.any([controller.signal,AbortSignal.timeout(15000)])});
+   if(epoch!==generation.current)return;
    if(r.status===401||(admin&&r.status===403)){setData(null);return;}
    if(!r.ok)throw new Error(r.status===403?'บัญชีนี้ไม่มีสิทธิ์แอดมิน':'โหลดสถิติไม่ได้ กรุณาลองอีกครั้ง');
-   setData(await r.json());setObservedAt(Date.now());setError('');
-  }catch(e){setError((e as Error).message);}
-  finally{setBusy(false);}
+   const incoming=await r.json();
+   if(epoch!==generation.current)return;
+   setData(previous=>{
+    const latest=newerLatest(previous?.latest,incoming.latest);
+    if(latestOnly)return previous&&latest!==previous.latest?{...previous,latest}:previous;
+    return {...incoming,latest};
+   });setObservedAt(Date.now());setError('');
+  }catch(e){if(!controller.signal.aborted&&!latestOnly)setError((e as Error).message);}
+  finally{if(activeRequest.current===controller){
+   activeRequest.current=null;setBusy(false);
+   if(pendingRefresh.current){pendingRefresh.current=false;void refreshRequest();}
+  }}
  },[admin,offset]);
 
  const fetchKeys=useCallback(async()=>{
@@ -63,8 +82,29 @@ export default function Dashboard({admin=false}:{admin?:boolean}){
    void refresh();
    if(admin)void fetchKeys();
   },60000);
-  return()=>{clearTimeout(first);clearInterval(timer);};
- },[refresh,fetchKeys,admin]);
+  return()=>{clearTimeout(first);clearInterval(timer);cancelRefresh();};
+ },[refresh,fetchKeys,admin,cancelRefresh]);
+
+ const signedIn=data!==null;
+ useEffect(()=>{
+  if(!signedIn)return;
+  let stopped=false,polling=false,timer:ReturnType<typeof setTimeout>;
+  async function poll(){
+   if(polling||stopped)return;
+   polling=true;
+   if(document.visibilityState==='visible')await refresh(true);
+   polling=false;
+   if(!stopped)timer=setTimeout(poll,2000);
+  }
+  function visible(){if(document.visibilityState==='visible'){clearTimeout(timer);void poll();}}
+  timer=setTimeout(poll,0);
+  document.addEventListener('visibilitychange',visible);
+  return()=>{stopped=true;clearTimeout(timer);document.removeEventListener('visibilitychange',visible);};
+ },[signedIn,refresh]);
+
+ useEffect(()=>{
+  if(data?.latest)console.debug('[stats-web] UI updated',data.latest.session,data.latest.revision??data.latest.updatedAt);
+ },[data?.latest]);
 
  async function login(event:React.SyntheticEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setError('');
@@ -80,6 +120,8 @@ export default function Dashboard({admin=false}:{admin?:boolean}){
  }
 
  async function logout(){
+  cancelRefresh();
+  setData(null);
   await fetch(admin?'/api/admin/logout':'/api/logout',{method:'POST'});
   setData(null);setKey('');setOffset(0);setKeysList([]);setCreatedKey(null);
  }
@@ -299,7 +341,7 @@ export default function Dashboard({admin=false}:{admin?:boolean}){
      <article><span><Timer/>{admin?'อัปเดตล่าสุด':'รอบปัจจุบัน / ล่าสุด'}</span><strong className="compact">{admin?(latest?date(latest.updatedAt*1000):'—'):v?duration(v[3]):'—'}</strong></article>
     </div>
 
-    {!admin&&latest&&<section className="run-strip"><span className={`dot ${observedAt/1000-latest.updatedAt>150?'stale':''}`}/><div><b>รอบที่ {v?.[0]} · {v?.[2]?'กำลังเล่น ณ เวลาที่ส่งข้อมูล':'จบรอบหรือไม่ได้เล่น'}</b><p>กล่องรอบนี้ {num(v!.slice(9,14).reduce((a,b)=>a+b,0))} ใบ · อัปเดต {date(latest.updatedAt*1000)}</p></div><small>ข้อมูลส่งประมาณทุก 60 วินาที</small></section>}
+    {!admin&&latest&&<section className="run-strip"><span className={`dot ${observedAt/1000-latest.updatedAt>150?'stale':''}`}/><div><b>รอบที่ {v?.[0]} · {v?.[2]?'กำลังเล่น ณ เวลาที่ส่งข้อมูล':'จบรอบหรือไม่ได้เล่น'}</b><p>กล่องรอบนี้ {num(v!.slice(9,14).reduce((a,b)=>a+b,0))} ใบ · อัปเดต {date(latest.updatedAt*1000)}</p></div><small>อัปเดตรอบล่าสุดอัตโนมัติ</small></section>}
     <section className="box-section"><h2>Mystery Box <small>รวมเซสชันในหน้านี้</small></h2><div className="boxes">{boxNames.map((name,i)=><article key={name} className={`box box-${i}`}><Package/><span>{name}</span><strong>{num(totals[i])}</strong></article>)}</div></section>
     
     <section className="history">

@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 const origin=process.env.TEST_ORIGIN||'http://localhost:3000';
 test('anonymous visitor cannot read private statistics',async()=>{
  const r=await fetch(origin+'/api/stats');assert.equal(r.status,401);assert.match(r.headers.get('cache-control'),/no-store/);
+ const latest=await fetch(origin+'/api/stats?latest=1');assert.equal(latest.status,401);assert.match(latest.headers.get('cache-control'),/no-store/);
 });
 test('anonymous visitor cannot read administrator statistics',async()=>{
  const r=await fetch(origin+'/api/admin');assert.equal(r.status,403);
+ assert.equal((await fetch(origin+'/api/admin?latest=1')).status,403);
 });
 test('cross-origin login and logout are rejected',async()=>{
  for(const route of ['login','logout']){
